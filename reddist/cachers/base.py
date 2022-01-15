@@ -1,10 +1,13 @@
 import asyncio
+import random
 import typing as t
 from abc import ABC, abstractmethod
 
 from asyncpraw import Reddit, models
 
 from ..utils import RedditSortType, RedditSubmission, RedditSubmissionBase
+
+_T = t.TypeVar("_T")
 
 
 class RedditCacherBase(ABC):
@@ -80,6 +83,11 @@ class RedditCacherBase(ABC):
 
         return submissions
 
+    async def get_random_post(
+        self, subreddit_name: str, _return_type: type[_T] | None = None
+    ) -> _T:
+        return random.choice(await self.get_subreddit_posts(subreddit_name))
+
     @abstractmethod
     async def _generate_subreddits_cache(
         self, subreddits: list[str]
@@ -87,7 +95,9 @@ class RedditCacherBase(ABC):
         ...
 
     @abstractmethod
-    async def get_subreddit_posts(self, subreddit_name: str) -> list[RedditSubmission]:
+    async def get_subreddit_posts(
+        self, subreddit_name: str, _return_type: type[_T] | None = None
+    ) -> list[_T]:
         ...
 
     @abstractmethod
