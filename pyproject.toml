@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "reddist"
-version = "0.1.0"
+version = "0.2.0-alpha.0"
 description = "Just a simple library for caching reddit posts"
 authors = ["CaffieneDuck <samrid.pandit@gmail.com>"]
 license = "MIT"
