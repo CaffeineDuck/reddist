@@ -1,22 +1,27 @@
 import asyncio
+import dataclasses
 import pickle
 import typing as t
 from abc import ABC, abstractmethod
-from dataclasses import dataclass
 from enum import Enum
 
 import aiofiles
 from aioredis import Redis
-from asyncpraw import Reddit
+from asyncpraw import Reddit, models
 
 
-# TODO: Make this so that user can pass the RedditSubmission object
-@dataclass
-class RedditSubmission:
-    image_url: str | None
+@dataclasses.dataclass(init=False)
+class RedditSubmissionBase:
+    def __init__(self, **kwargs):
+        names = set([f.name for f in dataclasses.fields(self)])
+        {setattr(self, k, v) for (k, v) in kwargs.items() if k in names}
+
+
+@dataclasses.dataclass(init=False)
+class RedditSubmission(RedditSubmissionBase):
     title: str
     permalink: str
-
+    url: str
 
 class RedditSortType(str, Enum):
     NEW = "new"
@@ -35,6 +40,7 @@ class RedditCacher(ABC):
         cache_refresh_time: int | None = None,
         posts_sort_type: RedditSortType | None = None,
         allowed_extensions: tuple[str] | t.Literal[False] | None = None,
+        reddit_submission: RedditSubmissionBase | None = None,
     ) -> None:
         self._subreddits = subreddits or set()
         self._cache_refresh_time = cache_refresh_time or 60 * 60 * 6
@@ -42,6 +48,7 @@ class RedditCacher(ABC):
         self._reddit = apraw_reddit_instance
         self._posts_sort_type = posts_sort_type or RedditSortType.HOT
         self._caching_started = False
+        self._reddit_submission_object = reddit_submission or RedditSubmission
 
         if allowed_extensions is None:
             self._allowed_extensions = (".gif", ".png", ".jpg", ".jpeg", ".webp")
@@ -73,13 +80,14 @@ class RedditCacher(ABC):
         return subreddit_cache
 
     async def _generate_single_subreddit_cache(self, subreddit_name: str):
-        subreddit = await self._reddit.subreddit(subreddit_name, fetch=True)
-
+        subreddit: models.Subreddit = await self._reddit.subreddit(
+            subreddit_name, fetch=True
+        )
         func = getattr(subreddit, self._posts_sort_type.value)
 
         if self._allowed_extensions == False:
             return [
-                RedditSubmission(submission.url, submission.title, submission.permalink)
+                self._reddit_submission_object(**vars(submission))
                 async for submission in func(limit=self._cached_posts_count)
             ]
 
@@ -91,13 +99,7 @@ class RedditCacher(ABC):
             if not submission.url.endswith(self._allowed_extensions):
                 continue
 
-            submissions.append(
-                RedditSubmission(
-                    image_url=submission.url,
-                    title=submission.title,
-                    permalink=submission.permalink,
-                )
-            )
+            submissions.append(self._reddit_submission_object(**vars(submission)))
             post_count += 1
 
         return submissions
