@@ -11,8 +11,15 @@ Just a python library to make reddit post caching easier.
 ## Usage
 
 ### Installation:
+
+- Developement
 ```sh
 poetry add git+https://github.com/CaffeineDuck/reddist
+```
+
+- Stable
+```sh
+poetry add reddist
 ```
 
 ### Pickle Usage:
