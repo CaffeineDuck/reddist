@@ -17,12 +17,12 @@ class RedisRedditCacher(RedditCacherBase):
         redis_instance: Redis,
         **kwargs: dict[str, t.Any],
     ) -> None:
-        super().__init__(
-            apraw_reddit_instance, **kwargs
-        )
+        super().__init__(apraw_reddit_instance, **kwargs)
         self._redis_instance = redis_instance
 
-    async def get_subreddit_posts(self, subreddit_name: str, _return_type: type[_T] = None) -> list[_T]:
+    async def get_subreddit_posts(
+        self, subreddit_name: str, _return_type: type[_T] = None
+    ) -> list[_T]:
         subreddit_cache = await self._redis_instance.get(subreddit_name)
         if not subreddit_cache:
             subreddit_cache = pickle.dumps(

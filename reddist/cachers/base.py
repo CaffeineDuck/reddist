@@ -7,7 +7,6 @@ from asyncpraw import Reddit, models
 from ..utils import RedditSortType, RedditSubmission, RedditSubmissionBase
 
 
-
 class RedditCacherBase(ABC):
     def __init__(
         self,

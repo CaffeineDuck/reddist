@@ -9,17 +9,13 @@ _T = t.TypeVar("_T")
 
 
 class MemoryRedditCacher(RedditCacherBase):
-    def __init__(
-        self,
-        apraw_reddit_instance: Reddit,
-        **kwargs
-    ) -> None:
-        super().__init__(
-            apraw_reddit_instance, **kwargs
-        )
+    def __init__(self, apraw_reddit_instance: Reddit, **kwargs) -> None:
+        super().__init__(apraw_reddit_instance, **kwargs)
         self._subreddit_cache = {}
 
-    async def get_subreddit_posts(self, subreddit_name: str, _return_type: type[_T] | None = None) -> list[_T]:
+    async def get_subreddit_posts(
+        self, subreddit_name: str, _return_type: type[_T] | None = None
+    ) -> list[_T]:
         if subreddit_name not in self._subreddit_cache:
             subreddit_cache = await self._generate_single_subreddit_cache(
                 subreddit_name
