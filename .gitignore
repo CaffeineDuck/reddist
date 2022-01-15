@@ -5,4 +5,7 @@
 __pycache__/
 *.pyc
 
+# Build files
+dist/
+
 test.py
