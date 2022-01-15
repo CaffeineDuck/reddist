@@ -23,7 +23,7 @@ class RedisRedditCacher(RedditCacherBase):
     async def get_subreddit_posts(
         self, subreddit_name: str, _return_type: type[_T] = None
     ) -> list[_T]:
-        subreddit_cache = await self._redis_instance.get(subreddit_name)
+        subreddit_cache = await self._redis_instance.get(f"r/{subreddit_name}")
         if not subreddit_cache:
             subreddit_cache = pickle.dumps(
                 await self._generate_single_subreddit_cache(subreddit_name), 2
