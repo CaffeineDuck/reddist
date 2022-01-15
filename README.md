@@ -37,8 +37,7 @@ async def main():
                 client_secret="CLIENT_SECRET",
             ),
             'cache.pickle',
-            cache_refresh_time=10,
-            cached_posts_count=10,
+            cached_posts_count=100,
         )
 
     reddit_cacher.start_caching()
@@ -64,8 +63,7 @@ async def main():
                 client_id="CLIENT_ID",
                 client_secret="CLIENT_SECRET",
             ),
-            cache_refresh_time=10,
-            cached_posts_count=10,
+            cached_posts_count=100,
         )
 
     reddit_cacher.start_caching()
