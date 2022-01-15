@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "dpydit"
+name = "reddist"
 version = "0.1.0"
 description = "Just a simple library for caching reddit posts"
 authors = ["CaffieneDuck <samrid.pandit@gmail.com>"]
